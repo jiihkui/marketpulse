@@ -15,16 +15,17 @@ class MarketData(BaseModel):
 # We use Gemini 2.0 Flash because it's fast and has a great free tier
 agent = Agent('google:gemini-2.0-flash', result_type=MarketData)
 
-async def scrape_market(url, market_name):
+async def scrape_safely(url):
+    # 'async with' ensures the crawler closes NO MATTER WHAT
     async with AsyncWebCrawler() as crawler:
-        print(f"🕵️ Scanning {market_name}...")
-        result = await crawler.arun(url=url)
-        
-        # The AI reads the Markdown and finds the price info
-        response = await agent.run(f"Extract price info from this page: {result.markdown}")
-        data = response.data
-        print(f"✅ {market_name} Result: {data.currency} {data.price}")
-        return data
+        try:
+            result = await crawler.arun(url=url)
+            # Process your data...
+            return result
+        except Exception as e:
+            print(f"⚠️ Error on {url}: {e}")
+            return None
+    # At this point, the browser is guaranteed to be dead.
 
 async def main():
     # Example: iPhone 17 (US, China, Germany)
