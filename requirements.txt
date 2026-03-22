@@ -1,0 +1,4 @@
+crawl4ai
+pydantic-ai
+pydantic
+requests
