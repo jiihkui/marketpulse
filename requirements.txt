@@ -1,8 +1,6 @@
-crawl4ai>=0.8.0
-pydantic-ai>=0.0.18
-pydantic
+psycopg2-binary
+pydantic-ai==0.0.18
+crawl4ai==0.4.3
+psycopg2-binary==2.9.9
 requests==2.31.0
 urllib3==1.26.18
-psycopg2-binary
-
-
