@@ -1,0 +1,17 @@
+{
+  "name": "marketpulse",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "13.x",
+    "react": "18.x",
+    "react-dom": "18.x",
+    "pg": "^8.11.0",
+    "playwright": "^1.41.0",
+    "recharts": "^2.6.2"
+  }
+}
