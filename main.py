@@ -11,7 +11,35 @@ dispatcher = MemoryAdaptiveDispatcher(
 
 # Use it in your crawl command
 results = await crawler.arun_many(urls=urls, dispatcher=dispatcher)
+
 import os
+import psycopg2
+
+def init_db():
+    # Get the URL Railway just gave us
+    db_url = os.environ.get("DATABASE_URL")
+    
+    conn = psycopg2.connect(db_url)
+    cur = conn.cursor()
+    
+    # This is your SQL setup - it runs automatically
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS pulses (
+            id SERIAL PRIMARY KEY,
+            product_name TEXT NOT NULL,
+            price NUMERIC(10, 2),
+            currency VARCHAR(10),
+            region VARCHAR(50),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+    """)
+    
+    conn.commit()
+    cur.close()
+    conn.close()
+    print("🐘 MarketPulse: Database tables are ready!")
+
+
 
 # 1. Define our JSON Structure
 class MarketData(BaseModel):
