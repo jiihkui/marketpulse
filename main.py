@@ -2,6 +2,15 @@ import asyncio
 from crawl4ai import AsyncWebCrawler
 from pydantic import BaseModel
 from pydantic_ai import Agent
+from crawl4ai.async_dispatcher import MemoryAdaptiveDispatcher
+
+dispatcher = MemoryAdaptiveDispatcher(
+    memory_threshold_percent=80.0, # Pause if RAM hits 80%
+    check_interval=2.0             # Check every 2 seconds
+)
+
+# Use it in your crawl command
+results = await crawler.arun_many(urls=urls, dispatcher=dispatcher)
 import os
 
 # 1. Define our JSON Structure
