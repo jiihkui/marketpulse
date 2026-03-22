@@ -6,14 +6,26 @@ from pydantic import BaseModel, Field
 from pydantic_ai import Agent
 from crawl4ai import AsyncWebCrawler, CrawlerRunConfig, CacheMode
 
+from pydantic_ai.models.google_gla import GoogleLabsModel
+
+# Get the key from Railway Variables
+api_key = os.getenv("GOOGLE_API_KEY")
+
+if not api_key:
+    print("❌ ERROR: GOOGLE_API_KEY is missing in Railway Variables!")
+    # We exit gracefully so you don't waste build credits on a broken run
+    exit(1)
+
+# Explicitly pass the model for 2026 PydanticAI versions
+model = GoogleLabsModel('gemini-2.0-flash', api_key=api_key)
+agent = Agent(model, result_type=MarketData)
+
 # 1. Schema
 class MarketData(BaseModel):
     product_name: str
     price: float
     currency: str
     in_stock: bool
-
-agent = Agent('google:gemini-2.0-flash', result_type=MarketData)
 
 # 2. Database Init (Updated for Grafana)
 def init_db():
