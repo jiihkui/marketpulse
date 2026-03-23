@@ -7,6 +7,11 @@ export default async function handler(req, res) {
   try {
     const price = await scrapePrice(url);
 
+    // ✅ ADD IT HERE (immediately after scraping)
+    if (!price) {
+      return res.status(200).json({ error: "Price not found" });
+    }
+
     // check if product exists
     let result = await pool.query('SELECT id FROM products WHERE url=$1', [url]);
 
