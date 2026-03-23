@@ -5,14 +5,20 @@ export default function Home() {
   const [name, setName] = useState('');
 
   const handleTrack = async () => {
-    const res = await fetch('/api/track', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url, name }),
-    });
-    const data = await res.json();
-    alert(`Price: ${data.price}`);
-  };
+  const res = await fetch('/api/track', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url, name }),
+  });
+
+  const data = await res.json();
+
+  if (data.error) {
+    alert("Error: " + data.error);
+  } else {
+    alert("Price: " + data.price);
+  }
+};
 
   return (
     <div style={{ padding: '2rem' }}>
