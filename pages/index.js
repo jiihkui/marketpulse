@@ -15,7 +15,9 @@ export default function Home() {
   });
 
   const parsed = await aiRes.json();
-
+  
+  console.log("AI parsed:", parsed);
+  
   // Step 2: call tracker
   await fetch('/api/track', {
     method: 'POST',
