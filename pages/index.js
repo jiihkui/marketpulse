@@ -22,7 +22,7 @@ export default function Home() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         name: parsed.name,
-        url: parsed.search
+        url: parsed.search || input
       }),
     });
 

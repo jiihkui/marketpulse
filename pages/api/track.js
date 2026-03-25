@@ -17,6 +17,10 @@ export default async function handler(req, res) {
 
     let productId;
 
+if (!url) {
+  return res.status(400).json({ error: "Invalid URL" });
+}
+
     if (result.rows.length === 0) {
       const insert = await pool.query(
         'INSERT INTO products (name, url) VALUES ($1, $2) RETURNING id',

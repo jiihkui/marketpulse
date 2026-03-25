@@ -5,7 +5,7 @@ export default async function handler(req, res) {
 
   try {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${process.env.GEMINI_API_KEY}`,
       {
         method: "POST",
         headers: {
@@ -40,15 +40,31 @@ Return ONLY JSON like:
 
     console.log("Gemini response:", data);
 
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    const parsed = JSON.parse(jsonMatch[0]);
+if (!text) {
+  console.log("No AI text returned");
+  return res.status(200).json({
+    name: input,
+    search: input
+  });
+}
 
-    res.status(200).json(parsed);
+// extract JSON safely
+const jsonMatch = text.match(/\{[\s\S]*\}/);
 
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "AI parsing failed" });
+let parsed;
+
+if (jsonMatch) {
+  parsed = JSON.parse(jsonMatch[0]);
+} else {
+  // fallback
+  parsed = {
+    name: input,
+    search: input
+  };
+}
+
+res.status(200).json(parsed);
   }
 }
