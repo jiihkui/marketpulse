@@ -2,35 +2,52 @@ import { useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip } from 'recharts';
 
 export default function Home() {
-  const [url, setUrl] = useState('');
-  const [name, setName] = useState('');
-  const [data, setData] = useState([]);
+	const [input, setInput] = useState('');
 
   const handleTrack = async () => {
-    await fetch('/api/track', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url, name }),
-    });
+  // Step 1: parse input using AI
+  const aiRes = await fetch('/api/parse', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ input })
+  });
 
-    const res = await fetch(`/api/history?url=${encodeURIComponent(url)}`);
-    const history = await res.json();
+  const parsed = await aiRes.json();
 
-    const formatted = history.map(item => ({
-      price: Number(item.price),
-      time: new Date(item.created_at).toLocaleTimeString(),
-    }));
+  // Step 2: call tracker
+  await fetch('/api/track', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      name: parsed.name,
+      url: parsed.search // for now use search
+    }),
+  });
 
-    setData(formatted);
-  };
+  // Step 3: load history
+  const res = await fetch(`/api/history?url=${encodeURIComponent(parsed.search)}`);
+  const history = await res.json();
+
+  const formatted = history.map(item => ({
+    price: Number(item.price),
+    time: new Date(item.created_at).toLocaleTimeString(),
+  }));
+
+  setData(formatted);
+};
 
   return (
     <div style={{ padding: '2rem' }}>
       <h1>MarketPulse</h1>
 
-      <input placeholder="Product Name" onChange={(e) => setName(e.target.value)} />
-      <input placeholder="Product URL" onChange={(e) => setUrl(e.target.value)} />
-      <button onClick={handleTrack}>Track</button>
+	<input 
+  placeholder="Track anything... (e.g. iPhone 17 Apple SG)"
+  onChange={(e) => setInput(e.target.value)} 
+/>
 
       {data.length > 0 && (
         <LineChart width={700} height={300} data={data}>
